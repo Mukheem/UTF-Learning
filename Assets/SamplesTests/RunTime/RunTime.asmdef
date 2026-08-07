@@ -1,0 +1,6 @@
+{
+    "name": "RunTime",
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}
