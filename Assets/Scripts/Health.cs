@@ -34,6 +34,7 @@ public class Health
 
             CurrentHealth = Math.Min(this._maxHealth, tempCurrentHealth); // Math.Min - Covers scenario when amount is greater than leftPercentage of health i.e., currentHealth is 80 and maxHealth is 100 then amount is 30 --> Caps the currentHealth to Max health.
         }
+        
 
     }
 }
