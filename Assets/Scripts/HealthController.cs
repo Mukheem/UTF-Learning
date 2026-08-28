@@ -6,7 +6,7 @@ public class HealthController : MonoBehaviour
     private Health health;
     [SerializeField]
     private int _startingMaxHealth = 100;
-    private float lastDamageTime;
+    public float lastDamageTime{ get; private set; }
     private float regenDelay = 3f;
     private int regenAmount = 1;
 
@@ -21,7 +21,9 @@ public class HealthController : MonoBehaviour
     }
 
     public void TakeDamage(int amount){
-        lastDamageTime = Time.time;
+        if(amount > 0){
+            lastDamageTime = Time.time;
+        }
         health.TakeDamage(amount);
     }
 
