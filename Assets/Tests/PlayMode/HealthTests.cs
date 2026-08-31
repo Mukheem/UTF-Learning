@@ -6,47 +6,48 @@ using UnityEngine.TestTools;
 public class HealthTests
 {
 
-        GameObject prefab = Resources.Load<GameObject>("HealthCube");
+        GameObject prefab;
         GameObject instance;
-
         HealthController healthController;
+        int startingHealth;
 
     [SetUp]
     public void Setup()
 
     {
+        prefab = Resources.Load<GameObject>("HealthCube");
+        Assert.IsNotNull(prefab, "HealthCube prefab not found in Resources");
         instance = Object.Instantiate(prefab);
          // Prefab Instantiation -- happens before each test.
         healthController= instance.GetComponent<HealthController>();
+        startingHealth = healthController.GetCurrentHealth();
     }
 
     [UnityTest]
     public IEnumerator Regen_HealsAfterDelay()
     {
-        healthController.TakeDamage(55);
-        yield return new WaitForSeconds(5.5f);
-        Debug.Log(healthController.getCurrentHealth());
-        Assert.That(healthController.getCurrentHealth(), Is.GreaterThan(45));
+        int damageToBeDone = 53;
+        healthController.TakeDamage(damageToBeDone);
+        yield return new WaitForSeconds(healthController.RegenDelay + 2.5f); // Eg. RegenDelay is 3f then we wait for 5.5f to check if healing is done.
+        Debug.Log(healthController.GetCurrentHealth());
+        Assert.That(healthController.GetCurrentHealth(), Is.GreaterThan(startingHealth-damageToBeDone));
     }
 
     [UnityTest]
     public IEnumerator Regen_DoesNotHealBeforeDelayElapses()
     {
-        //HealthController healthController= instance.GetComponent<HealthController>();
-
         // HealthController healthController = new GameObject().AddComponent<HealthController>();Old Approach of Instantiating without a prefab
-        healthController.TakeDamage(55);
-        yield return new WaitForSeconds(1f); //RegenDealy is 3 seconds. so using less than 3 to test this scenario.
-        Debug.Log(healthController.getCurrentHealth());
-        Assert.AreEqual(45,healthController.getCurrentHealth());
+        int damageToBeDone = 51;    
+        healthController.TakeDamage(damageToBeDone);
+        yield return new WaitForSeconds(healthController.RegenDelay - 1f); //Eg. RegenDealy is 3 seconds. so using less than 3 to test this scenario.
+        Assert.AreEqual(startingHealth-damageToBeDone,healthController.GetCurrentHealth());
     }
 
     [UnityTest]
     public IEnumerator Regen_LastDamageTimeDoesNotChangeWhenZeroDamage(){
-        //HealthController healthController= instance.GetComponent<HealthController>();
         float lastDamageTimeBeforeZeroDamage = healthController.lastDamageTime;
         healthController.TakeDamage(0);
-        yield return new WaitForSeconds(5.5f);
+        yield return new WaitForSeconds(healthController.RegenDelay + 2.5f);
         float lastDamageTimeAfterZeroDamage = healthController.lastDamageTime;
         Assert.AreEqual(lastDamageTimeBeforeZeroDamage,lastDamageTimeAfterZeroDamage);
     }
@@ -54,7 +55,7 @@ public class HealthTests
     [TearDown]
     public void Teardown()
     {
-        // Clean up: Destroy the object immediately after every test
-        Object.DestroyImmediate(instance);
+        // Clean up: Destroy the object  after every test
+        Object.Destroy(instance);
     }
 }

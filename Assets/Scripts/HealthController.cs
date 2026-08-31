@@ -7,8 +7,13 @@ public class HealthController : MonoBehaviour
     [SerializeField]
     private int _startingMaxHealth = 100; // This default value is used only when the object is instantiated thru code like {new GameObject().AddComponent<HealthController>()}
     public float lastDamageTime{ get; private set; }
-    private float regenDelay = 3f;
+    [SerializeField]
+    private float regenDelay = 3f; 
+    [SerializeField]
     private int regenAmount = 1;
+
+    public float RegenDelay => regenDelay; // Expression bodied read-only property for the tests to read the values set thru prefab
+    public int RegenAmount => regenAmount; // Expression bodied read-only property for the tests to read the values set thru prefab
 
     void Awake(){
         
@@ -31,7 +36,7 @@ public class HealthController : MonoBehaviour
         health.Heal(amount);
     }
 
-    public int getCurrentHealth(){
+    public int GetCurrentHealth(){
         return health.CurrentHealth;
     }
 
