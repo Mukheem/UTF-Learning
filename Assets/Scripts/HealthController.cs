@@ -5,7 +5,7 @@ public class HealthController : MonoBehaviour
 {
     private Health health;
     [SerializeField]
-    private int _startingMaxHealth = 100;
+    private int _startingMaxHealth = 100; // This default value is used only when the object is instantiated thru code like {new GameObject().AddComponent<HealthController>()}
     public float lastDamageTime{ get; private set; }
     private float regenDelay = 3f;
     private int regenAmount = 1;

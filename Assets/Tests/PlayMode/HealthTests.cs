@@ -6,10 +6,23 @@ using UnityEngine.TestTools;
 public class HealthTests
 {
 
+        GameObject prefab = Resources.Load<GameObject>("HealthCube");
+        GameObject instance;
+
+        HealthController healthController;
+
+    [SetUp]
+    public void Setup()
+
+    {
+        instance = Object.Instantiate(prefab);
+         // Prefab Instantiation -- happens before each test.
+        healthController= instance.GetComponent<HealthController>();
+    }
+
     [UnityTest]
     public IEnumerator Regen_HealsAfterDelay()
     {
-        HealthController healthController= new GameObject().AddComponent<HealthController>();
         healthController.TakeDamage(55);
         yield return new WaitForSeconds(5.5f);
         Debug.Log(healthController.getCurrentHealth());
@@ -19,7 +32,9 @@ public class HealthTests
     [UnityTest]
     public IEnumerator Regen_DoesNotHealBeforeDelayElapses()
     {
-        HealthController healthController = new GameObject().AddComponent<HealthController>();
+        //HealthController healthController= instance.GetComponent<HealthController>();
+
+        // HealthController healthController = new GameObject().AddComponent<HealthController>();Old Approach of Instantiating without a prefab
         healthController.TakeDamage(55);
         yield return new WaitForSeconds(1f); //RegenDealy is 3 seconds. so using less than 3 to test this scenario.
         Debug.Log(healthController.getCurrentHealth());
@@ -28,11 +43,18 @@ public class HealthTests
 
     [UnityTest]
     public IEnumerator Regen_LastDamageTimeDoesNotChangeWhenZeroDamage(){
-        HealthController healthController = new GameObject().AddComponent<HealthController>();
+        //HealthController healthController= instance.GetComponent<HealthController>();
         float lastDamageTimeBeforeZeroDamage = healthController.lastDamageTime;
         healthController.TakeDamage(0);
         yield return new WaitForSeconds(5.5f);
         float lastDamageTimeAfterZeroDamage = healthController.lastDamageTime;
         Assert.AreEqual(lastDamageTimeBeforeZeroDamage,lastDamageTimeAfterZeroDamage);
+    }
+
+    [TearDown]
+    public void Teardown()
+    {
+        // Clean up: Destroy the object immediately after every test
+        Object.DestroyImmediate(instance);
     }
 }
